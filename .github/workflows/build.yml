@@ -16,6 +16,15 @@ jobs:
     - name: Checkout manifest repository
       uses: actions/checkout@v4
 
+    - name: Maximize Swap Space
+      run: |
+        sudo swapoff -a
+        sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        free -h
+
     - name: Cache Toolchain
       id: cache-toolchain
       uses: actions/cache@v4
