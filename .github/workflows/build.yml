@@ -33,3 +33,8 @@ jobs:
         chmod +x ./build_kernel_GKI.sh
         ./build_kernel_GKI.sh
 
+    - name: Find Created Files (Debug)
+      run: |
+        echo "find created files"
+        echo "=== カーネルバイナリ（Image）の候補を特定 ==="
+        find . -name "Image" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.ko" -o -name "*.img"
