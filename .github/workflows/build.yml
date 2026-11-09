@@ -1,0 +1,35 @@
+name: Kernel Build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout manifest repository
+      uses: actions/checkout@v4
+
+    - name: Cache Toolchain
+      id: cache-toolchain
+      uses: actions/cache@v4
+      with:
+        path: toolchain
+        key: ${{ runner.os }}-toolchain-${{ hashFiles('**/default.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-toolchain-
+
+    - name: Download or update toolchain
+      run: |
+        echo "Starting download toolchain...."
+        chmod +x ./download_toolchain.sh
+        ./download_toolchain.sh
+
+    - name: Run Build
+      run: |
+        echo "Starting kernel build..."
+        chmod +x ./build_kernel_GKI.sh
+        ./build_kernel_GKI.sh
+

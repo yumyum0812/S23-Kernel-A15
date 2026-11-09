@@ -1,2 +1,4 @@
 out/
 /kernel_platform/prebuilts/
+.repo/
+.git/
