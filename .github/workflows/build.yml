@@ -22,6 +22,7 @@ jobs:
         remove-dotnet: 'true'
         remove-haskell: 'true'
         remove-codeql: 'true'
+        remove-docker-images: 'true'
     
     - name: Checkout manifest repository
       uses: actions/checkout@v4
@@ -43,12 +44,21 @@ jobs:
 
     - name: Run Build
       run: |
+        (
+          while true; do
+            sleep 300
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] CI Status: Kernel build is still running..."
+          done
+        ) &
+        MONITOR_PID=$!
+        
         echo "Starting kernel build..."
         chmod +x ./build_kernel_GKI.sh
         ./build_kernel_GKI.sh
 
+        kill $MONITOR_PID
+
     - name: Find Created Files (Debug)
       run: |
         echo "find created files"
-        echo "=== カーネルバイナリ（Image）の候補を特定 ==="
         find . -name "Image" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.ko" -o -name "*.img"
