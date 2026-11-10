@@ -46,7 +46,7 @@ jobs:
       run: |
         (
           while true; do
-            sleep 300
+            sleep 120
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] CI Status: Kernel build is still running..."
           done
         ) &
