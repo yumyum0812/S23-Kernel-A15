@@ -24,11 +24,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup environment
-      run: |
-        chmod +x setup_env.sh
-        ./setup_env.sh
-
     - name: Maximize build space
       uses: easimon/maximize-build-space@v10
       with:
@@ -42,15 +37,20 @@ jobs:
 
     - name: Checkout manifest repository
       uses: actions/checkout@v4
+
+    - name: Setup environment
+      run: |
+        chmod +x setup_env.sh
+        ./setup_env.sh
       
-    - name: Cache Toolchain
-      id: cache-toolchain
-      uses: actions/cache@v4
-      with:
-        path: toolchain
-        key: ${{ runner.os }}-toolchain-${{ hashFiles('**/default.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-toolchain-
+    # - name: Cache Toolchain
+    # id: cache-toolchain
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: toolchain
+    #     key: ${{ runner.os }}-toolchain-${{ hashFiles('**/default.xml') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-toolchain-
 
     - name: Download or update toolchain
       run: |
