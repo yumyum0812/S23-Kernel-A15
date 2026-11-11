@@ -1,8 +1,19 @@
 name: Kernel Build
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #  branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      lto_mode:
+        description: 'Select LTO Mode (none = Fast build, thin = Default/Balanced, full = Max optimization)'
+        required: true
+        type: choice
+        default: 'none'
+        options:
+          - none
+          - thin
+          - full
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,18 +23,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    - name: Setup environment
+      run: |
+        chmod +x setup_env.sh
+        ./setup_env.sh
+
     steps:
     - name: Maximize build space
       uses: easimon/maximize-build-space@v10
       with:
-        root-reserve-mb: 2048
+        root-reserve-mb: 1024
         swap-size-mb: 8192
         remove-android: 'true'
         remove-dotnet: 'true'
         remove-haskell: 'true'
         remove-codeql: 'true'
         remove-docker-images: 'true'
-    
+
     - name: Checkout manifest repository
       uses: actions/checkout@v4
       
@@ -43,6 +59,8 @@ jobs:
         ./download_toolchain.sh
 
     - name: Run Build
+      env:
+        LTO: ${{ github.event.inputs.lto_mode }}
       run: |
         (
           while true; do
@@ -54,6 +72,8 @@ jobs:
         
         echo "Starting kernel build..."
         chmod +x ./build_kernel_GKI.sh
+        export MAKEFLGS="-j($nproc)"
+        export LTO="none"
         ./build_kernel_GKI.sh
 
         kill $MONITOR_PID
@@ -61,4 +81,4 @@ jobs:
     - name: Find Created Files (Debug)
       run: |
         echo "find created files"
-        find . -name "Image" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.ko" -o -name "*.img"
+        find out -name "Image" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.ko" -o -name "*.img"

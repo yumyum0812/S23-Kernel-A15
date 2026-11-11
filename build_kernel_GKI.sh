@@ -39,4 +39,8 @@ export KBUILD_EXT_MODULES="../vendor/qcom/opensource/mm-drivers/msm_ext_display 
   "
   
 #3. build kernel
-RECOMPILE_KERNEL=1 ./kernel_platform/build/android/prepare_vendor.sh sec ${TARGET_PRODUCT}
+export LTO="${LTO:-none}"
+export TRIM_NONLISTED_KMI=$([ -z "$TRIM_NONLISTED_KMI" ] && [ "$LTO" = "none" ] && echo 0)
+export KMI_SYMBOL_LIST_STRICT_MODE=$([ -z "$KMI_SYMBOL_LIST_STRICT_MODE" ] && [ "$LTO" = "none" ] && echo 0)
+export RECOMPILE_KERNEL=${RECOMPILE_KERNEL:-1}
+./kernel_platform/build/android/prepare_vendor.sh sec ${TARGET_PRODUCT}
