@@ -29,7 +29,6 @@ jobs:
         chmod +x setup_env.sh
         ./setup_env.sh
 
-    steps:
     - name: Maximize build space
       uses: easimon/maximize-build-space@v10
       with:
