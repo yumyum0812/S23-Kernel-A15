@@ -27,9 +27,10 @@ for path in "${!PREBUILTS[@]}"; do
   if [ -d "$PREBUILTS_BASE/$path" ]; then
     echo "> $PREBUILTS_BASE/$path already exists. skipping."
     continue
-   fi
+  fi
   
   git clone "${url}" "$PREBUILTS_BASE/$path" -b "${DEFAULT_REV}" --depth=1 --single-branch
+  rm -rf "$PREBUILTS_BASE/$path/.git"
 done
 
 echo "all prebuilts downloaded successfully"
