@@ -90,4 +90,4 @@ jobs:
     - name: Find Created Files (Debug)
       run: |
         echo "find created files"
-        find out -name "Image" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.ko" -o -name "*.img"
+        find . -name "Image" -o -name "Image.lz4" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.img"
