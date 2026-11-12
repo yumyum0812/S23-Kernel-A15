@@ -42,23 +42,14 @@ jobs:
       run: |
         chmod +x setup_env.sh
         ./setup_env.sh
-      
-    # - name: Cache Toolchain
-    # id: cache-toolchain
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: toolchain
-    #     key: ${{ runner.os }}-toolchain-${{ hashFiles('**/default.xml') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-toolchain-
-
-    - name: Download or update toolchain
+    
+    - name: Download toolchain
       run: |
         echo "Starting download toolchain...."
         chmod +x ./download_toolchain.sh
         ./download_toolchain.sh
 
-    - name: Run Build
+    - name: Run build
       env:
         LTO: ${{ github.event.inputs.lto_mode }}
       run: |
@@ -87,7 +78,57 @@ jobs:
 
         kill $MONITOR_PID
 
-    - name: Find Created Files (Debug)
+    - name: Find created files
       run: |
         echo "find created files"
-        find . -name "Image" -o -name "Image.lz4" -o -name "zImage" -o -name "bzImage" -o -name "Image.gz" -o -name "*.img"
+        target_names=(
+            "Image"
+            "Image.lz4"
+            "Image.gz"
+            "zImage"
+            "bzImage"
+            "*.img"
+        )
+
+        args=()
+        for name in "${target_names[@]}"; do
+            args+=( -name "$name" -o )
+        done
+        unset 'args[-1]'
+
+        find ./out -type f \( "${args[@]}" \) -exec sh -c '
+            for f do
+                size=$(du -h "$f" | cut -f1)
+                hash=$(sha256sum "$f" | cut -d" " -f1)
+                printf "%8s  %s  %s\n" "$size" "$hash" "$f"
+            done
+        ' sh {} +
+
+    - name: Collect build artifacts
+      run: |
+          mkdir -p ./artifacts
+
+          target_files=(
+            "./out/msm-kalama-kalama-gki/dist/Image.lz4"
+          )
+
+          for f in "${target_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "$f not found" >&2
+              exit 1
+            fi
+            
+            cp "$f" "./artifacts/$(basename "$f")"
+            if [ $? -ne 0 ]; then
+              echo "failed to copy $f to ./artifacts/$(basename "$f")" >&2
+              exit 1
+            fi
+          done
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-build-${{ github.run_number }}
+        path: ./artifacts/*
+        retention-days: 7
+        if-no-files-found: error
