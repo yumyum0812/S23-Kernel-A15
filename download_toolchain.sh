@@ -30,6 +30,7 @@ for path in "${!PREBUILTS[@]}"; do
   fi
   
   git clone "${url}" "$PREBUILTS_BASE/$path" -b "${DEFAULT_REV}" --depth=1 --single-branch
+  du -sh "$PREBUILTS_BASE/$path/.git"
   rm -rf "$PREBUILTS_BASE/$path/.git"
 done
 
