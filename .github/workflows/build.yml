@@ -74,6 +74,15 @@ jobs:
         chmod +x ./build_kernel_GKI.sh
         export MAKEFLGS="-j($nproc)"
         export LTO="none"
+        export POST_DEFCONFIG_CMDS="
+            unset BUILD_BOOT_IMG;
+            unset BUILD_VENDOR_BOOT_IMG;
+            unset BUILD_VENDOR_KERNEL_BOOT;
+            unset BUILD_INIT_BOOT_IMG;
+            unset SUPER_IMAGE_CONTENTS;
+            unset VENDOR_DLKM_MODULES_LIST;
+            unset BUILD_DTBO_IMG;
+        "
         ./build_kernel_GKI.sh
 
         kill $MONITOR_PID
