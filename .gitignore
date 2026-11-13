@@ -1,4 +1,7 @@
 out/
+/device/
 /kernel_platform/prebuilts/
 .repo/
 .git/
+
+*.ko
