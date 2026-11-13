@@ -72,6 +72,8 @@ jobs:
             unset BUILD_INIT_BOOT_IMG &&
             unset SUPER_IMAGE_CONTENTS &&
             unset VENDOR_DLKM_MODULES_LIST &&
+            unset BUILD_SYSTEM_DLKM &&
+            unset BUILD_GKI_ARTIFACTS &&
             unset BUILD_DTBO_IMG
         "
         ./build_kernel_GKI.sh
@@ -129,6 +131,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: kernel-build-${{ github.run_number }}
-        path: ./artifacts/*
+        path: ./artifacts/Image.lz4
         retention-days: 7
         if-no-files-found: error
